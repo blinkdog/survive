@@ -1,0 +1,41 @@
+{
+    "name": "survive",
+    "version": "0.0.1",
+    "author": "Patrick Meade <veloxi@ticon.net>",
+    "description": "Roguelike in CoffeeScript using rot.js",
+    "scripts": {
+        "postinstall": "cake compile",
+        "start": "firefox survive.html"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/blinkdog/survive.git"
+    },
+    "keywords": [
+	"7DRL",
+	"apocalypse",
+	"coffeescript",
+	"game",
+	"html5",
+	"javascript",
+	"permadeath",
+	"rogue",
+	"roguelike",
+	"rot",
+	"rot.js",
+	"survival",
+	"zombie"
+    ],
+    "dependencies": {
+        "browserify": "3.24.x",
+        "coffee-script": "1.6.x"
+    },
+    "devDependencies": {
+        "mocha": "1.14.x",
+	"should": "2.1.x"
+    },
+    "license" : "GNU Affero General Public License",
+    "engines": {
+        "node": "0.10.x"
+    }
+}
