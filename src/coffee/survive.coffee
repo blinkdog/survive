@@ -19,9 +19,9 @@ ROT = require('./rot').ROT
 
 exports.run = ->
   # if this is Microsoft Internet Explorer
-  if window?.msRequestAnimationFrame?
-    # don't let them play the game; get a better browser, scrub
-    alert("You died in the Zombie Apocalypse.\n           Game Over");
+  if isMicrosoftInternetExplorer()
+    # redirect to donotuseie.com; no scrubs allowed
+    window.location.href = 'http://donotuseie.com/'
     return;
   # if this is an older browser without HTML5 Canvas support
   if not ROT.isSupported()
@@ -30,6 +30,11 @@ exports.run = ->
     return;
   # otherwise, let's play a game of Survive!
   console.log 'Hello, Survive!'
+
+isMicrosoftInternetExplorer = ->
+  return true if navigator?.appName is 'Microsoft Internet Explorer'
+  return true if window?.msRequestAnimationFrame?
+  return false
 
 #----------------------------------------------------------------------------
 # end of survive.coffee
