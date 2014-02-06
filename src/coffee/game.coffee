@@ -1,4 +1,4 @@
-# survive.coffee
+# game.coffee
 # Copyright 2014 Patrick Meade.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -15,28 +15,19 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #----------------------------------------------------------------------------
 
-Game = require('./game').Game
 ROT = require('./rot').ROT
 
-exports.run = ->
-  # if this is Microsoft Internet Explorer
-  if isMicrosoftInternetExplorer()
-    # redirect to donotuseie.com; no scrubs allowed
-    window.location.href = 'http://donotuseie.com/'
-    return;
-  # if this is an older browser without HTML5 Canvas support
-  if not ROT.isSupported()
-    # they can't play the game
-    alert("Please upgrade to a modern browser.");
-    return;
-  # otherwise, let's play a game of Survive!
-  window.game = new Game()
-  window.game.run()
-  
-isMicrosoftInternetExplorer = ->
-  return true if navigator?.appName is 'Microsoft Internet Explorer'
-  return true if window?.msRequestAnimationFrame?
-  return false
+class Game
+  constructor: ->
+    document.body.innerHTML = "";
+    @display = new ROT.Display {width:80, height:25}
+    document.body.appendChild @display.getContainer()
+    
+  run: ->
+    ((@display.draw x, y, '.' for x in [0..79]) for y in [0..24]) 
+    @display.draw 40, 12, '@'
+    
+exports.Game = Game
 
 #----------------------------------------------------------------------------
-# end of survive.coffee
+# end of game.coffee
