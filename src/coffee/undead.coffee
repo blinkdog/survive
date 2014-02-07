@@ -18,7 +18,7 @@
 ROT = require('./rot').ROT
 
 class Zombie
-  constructor: (width, height) ->
+  constructor: (width, height, offsetX, offsetY) ->
     # determine initial position
     if ROT.RNG.getUniform() < 0.5
       @x = Math.floor ROT.RNG.getUniform() * width
@@ -32,13 +32,24 @@ class Zombie
         @x = 0
       else
         @x = width-1
+    # offset the location
+    @x -= offsetX
+    @y -= offsetY
     # determine speed
-    @speed = Math.round ROT.RNG.getNormal 100, 25
+    @speed = Math.round ROT.RNG.getNormal 50, 10
+    @speed = Math.max @speed, 10    # speed at least 10
+    # determine glyph
+    @glyph = 'Z'
+    # determine colors
+    @bg = '#000'
+    @fg = '#ff0'                    # yellow = 30-70
+    @fg = '#0f0' if @speed < 30     # green = 10-29
+    @fg = '#f00' if @speed > 70     # red = 71+
 
-  getColor: ->
-    return '#0f0' if @speed < 66
-    return '#f00' if @speed > 133
-    return '#ff0'
+  getSpeed: -> @speed
+
+  act: ->
+    alert 'Zombie with speed ' + @speed + ' is acting!'
 
 exports.Zombie = Zombie
 

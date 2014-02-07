@@ -56,5 +56,10 @@ describe 'coffee-script', ->
       else
         should(true).equal false
 
+  describe 'unicode symbols', ->
+    it 'should allow symbols or escape codes', ->
+      '⁍'.should.equal '\u204D'
+      '\u204D'.should.equal '⁍'
+
 #----------------------------------------------------------------------------
 # end of coffeescriptTest.coffee
