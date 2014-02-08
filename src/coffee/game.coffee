@@ -15,16 +15,21 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #----------------------------------------------------------------------------
 
+gui = require('./gui')
 ROT = require('./rot').ROT
+
+GameState = require('./gameState').GameState
 
 Player = require('./player').Player
 Zombie = require('./undead').Zombie
 
-DISP_WIDTH = 100
-DISP_HEIGHT = 40
+DISP_WIDTH = require('./constant').DISP_WIDTH = 100
+DISP_HEIGHT = require('./constant').DISP_HEIGHT = 40
 
-ARENA_WIDTH = 60
-ARENA_HEIGHT = 40
+ARENA_WIDTH = require('./constant').ARENA_WIDTH
+ARENA_HEIGHT = require('./constant').ARENA_HEIGHT
+
+NUM_STARTING_ZOMBIES = require('./constant').NUM_STARTING_ZOMBIES
 
 displayOptions =
   width: DISP_WIDTH       # horizontal size, in characters
@@ -39,9 +44,7 @@ displayOptions =
 class Game
   constructor: ->
     # create game state
-    @state =
-      player: new Player()
-      zombies: []
+    @state = new GameState {game:this}
     # add the ROT.Display to the HTML page
     document.body.innerHTML = ""
     @display = new ROT.Display displayOptions
@@ -67,58 +70,21 @@ class Game
     @display.setOptions {fontSize:fontSize}
     #@display._canvas.style.top = (Math.round ((h-@display._canvas.height)/2) + "px")
     
-  render: ->
-    # clear the display
-    @fillBox 0, 0, DISP_WIDTH, DISP_HEIGHT, ' ', '#fff', '#000'
-    # draw the arena
-    @fillBox 0, 0, ARENA_WIDTH, ARENA_HEIGHT, '.', '#070', '#000'
-    # draw the status window
-    @fillBox ARENA_WIDTH+1, 0, DISP_WIDTH, DISP_HEIGHT, 'X', '#777', '#000'
-    # draw a border around the status window
-    @drawBox ARENA_WIDTH+1, 0, DISP_WIDTH, DISP_HEIGHT, '#', '#fff', '#000'
-    # draw the game title
-    @fillBox ARENA_WIDTH+3, 2, DISP_WIDTH-2, 5, ' ', '#fff', '#000'
-    @display.drawText ARENA_WIDTH+4, 3, 'Survive!'
-    # draw the health bar
-#    @fillBox ARENA_WIDTH+3, 6, DISP_WIDTH-2, 8, ' ', '#fff', '#000'
-#    @display.drawText ARENA_WIDTH+3, 6, 'Health'
-#    @fillBox ARENA_WIDTH+3, 7, ARENA_WIDTH+4+(@state.player.health/10), 8, ' ', '#fff', '#f00'
-    # determine where things are relative to the player
-    offsetX = (ARENA_WIDTH/2) - @state.player.x
-    offsetY = (ARENA_HEIGHT/2) - @state.player.y
-    # draw the zombies
-    @drawMobile z, offsetX, offsetY for z in @state.zombies
-    # draw the player
-    @drawMobile @state.player, offsetX, offsetY
-    
   run: ->
-    offsetX = (ARENA_WIDTH/2) - @state.player.x
-    offsetY = (ARENA_HEIGHT/2) - @state.player.y
     # generate some zombies
-    @state.zombies.push new Zombie ARENA_WIDTH, ARENA_HEIGHT, offsetX, offsetY for i in [0..19]
+    @state.spawnZombie() for i in [1..NUM_STARTING_ZOMBIES]
+      
     # render this stuff
-    @render()
+    gui.render @display, @state
     # create the scheduler and engine
-    scheduler = new ROT.Scheduler.Speed()
-    engine = new ROT.Engine(scheduler)
+    @scheduler = new ROT.Scheduler.Speed()
+    @engine = new ROT.Engine(@scheduler)
     # add the player and the zombies
-    scheduler.add @state.player, true
-    scheduler.add z, true for z in @state.zombies
+    @scheduler.add @state.player, true
+    @scheduler.add z, true for z in @state.zombies
     # start your engines!
-    engine.start()
+    @engine.start()
     
-  drawBox: (x1, y1, x2, y2, ch, fg, bg) ->
-    (@display.draw x, y1, ch, fg, bg for x in [x1..x2-1])
-    (@display.draw x, y2-1, ch, fg, bg for x in [x1..x2-1])
-    (@display.draw x1, y, ch, fg, bg for y in [y1..y2-1])
-    (@display.draw x2-1, y, ch, fg, bg for y in [y1..y2-1])
-
-  drawMobile: (m, offsetX, offsetY) ->
-    @display.draw m.x+offsetX, m.y+offsetY, m.glyph, m.fg, m.bg
-
-  fillBox: (x1, y1, x2, y2, ch, fg, bg) ->
-    ((@display.draw x, y, ch, fg, bg for x in [x1..x2-1]) for y in [y1..y2-1])
-
 exports.Game = Game
 
 #----------------------------------------------------------------------------

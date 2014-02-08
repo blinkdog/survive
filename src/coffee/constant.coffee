@@ -1,4 +1,4 @@
-# extend.coffee
+# constant.coffee
 # Copyright 2014 Patrick Meade.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -15,31 +15,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #----------------------------------------------------------------------------
 
-# from: http://coffeescriptcookbook.com/chapters/classes_and_objects/cloning
-clone = (obj) ->
-  if not obj? or typeof obj isnt 'object'
-    return obj
+exports.ARENA_WIDTH = 60
+exports.ARENA_HEIGHT = 40
 
-  if obj instanceof Date
-    return new Date(obj.getTime()) 
+exports.BULLET = '⁍'                       # \u204D - Black Rightwards Bullet
 
-  if obj instanceof RegExp
-    flags = ''
-    flags += 'g' if obj.global?
-    flags += 'i' if obj.ignoreCase?
-    flags += 'm' if obj.multiline?
-    flags += 'y' if obj.sticky?
-    return new RegExp(obj.source, flags) 
+exports.DISP_WIDTH = 100
+exports.DISP_HEIGHT = 40
 
-  newInstance = new obj.constructor()
-
-  for key of obj
-    newInstance[key] = clone obj[key]
-
-  return newInstance
-
-# from: http://coffeescriptcookbook.com/chapters/metaprogramming/detecting-and-replacing-functions
-do -> Object::clone ?= -> clone this
+exports.NUM_STARTING_ZOMBIES = 20
 
 #----------------------------------------------------------------------------
-# end of extend.coffee
+# end of constant.coffee

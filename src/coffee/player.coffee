@@ -18,7 +18,8 @@
 ROT = require('./rot').ROT
 
 class Player
-  constructor: ->
+  constructor: (options) ->
+    @game = options.game
     @health = 100
     @speed = 100
     @glyph = '@'
@@ -30,7 +31,13 @@ class Player
   getSpeed: -> @speed
 
   act: ->
-    alert 'Player is acting!'
+    @game.engine.lock()
+    setTimeout @unlock, 500
+
+  unlock: ->
+    @game.engine.unlock()
+    # and now we render
+    gui.render @game.display, @game.state
 
 exports.Player = Player
 
