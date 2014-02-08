@@ -15,6 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #----------------------------------------------------------------------------
 
+exports.AMMO_PISTOL_BONUS_PICKUP = 10
+exports.AMMO_SHOTGUN_BONUS_PICKUP = 5
+
 exports.ARENA_WIDTH = 60
 exports.ARENA_HEIGHT = 40
 
@@ -25,6 +28,19 @@ exports.DISP_HEIGHT = 40
 
 exports.HEALTH_COST_BITE = 10
 
+exports.ITEM_TYPE_BAT = 'bat'
+exports.ITEM_TYPE_PISTOL = 'pistol'
+exports.ITEM_TYPE_SHOTGUN = 'shotgun'
+exports.ITEM_TYPE_PISTOL_AMMO = 'bullets'
+exports.ITEM_TYPE_SHOTGUN_AMMO = 'shells'
+
+exports.ITEM_TYPES = [
+  exports.ITEM_TYPE_BAT,
+  exports.ITEM_TYPE_PISTOL,
+  exports.ITEM_TYPE_SHOTGUN,
+  exports.ITEM_TYPE_PISTOL_AMMO,
+  exports.ITEM_TYPE_SHOTGUN_AMMO]
+
 exports.MAX_HEALTH = 100
 exports.MAX_STAMINA = 100
 
@@ -32,6 +48,7 @@ exports.MIN_HEALTH = 0
 exports.MIN_STAMINA = 0
 exports.MIN_ZOMBIE_SPEED = 0
 
+exports.NUM_STARTING_ITEMS = 5
 exports.NUM_STARTING_ZOMBIES = 20
 
 exports.STAMINA_BONUS_HURT = 5

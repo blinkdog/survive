@@ -17,15 +17,26 @@
 
 ROT = require('./rot').ROT
 
-Player = require('./player').Player
-Zombie = require('./undead').Zombie
+{Item} = require './item'
+{Player} = require './player'
+{Zombie} = require './undead'
 
-ARENA_HEIGHT = require('./constant').ARENA_HEIGHT
-ARENA_WIDTH = require('./constant').ARENA_WIDTH
+{ARENA_HEIGHT,
+ARENA_WIDTH,
+ITEM_TYPES} = require './constant'
 
-NUM_STARTING_ZOMBIES = require('./constant').NUM_STARTING_ZOMBIES
+getAnyPosition = ->
+  pos =
+    x: Math.floor ROT.RNG.getUniform() * ARENA_WIDTH
+    y: Math.floor ROT.RNG.getUniform() * ARENA_HEIGHT
 
-getZombiePosition = (options) -> 
+getHorizPosition = ->
+  {x:Math.floor ROT.RNG.getUniform() * ARENA_WIDTH, y:0}
+
+getVertPosition = ->
+  {x:0, y:Math.floor ROT.RNG.getUniform() * ARENA_HEIGHT}
+
+getZombiePosition = (options) ->
   offsetX = (ARENA_WIDTH / 2) - options.x
   offsetY = (ARENA_HEIGHT / 2) - options.y
   # determine initial position
@@ -50,10 +61,25 @@ getZombiePosition = (options) ->
 class GameState
   constructor: (options) ->
     @game = options.game
+    @items = []
     @over = false
     @player = new Player options
     @turn = 0
     @zombies = []
+
+  spawnItem: ->
+    # create a random location on the map
+    itemPos = getAnyPosition()
+    itemPos.x -= ((ARENA_WIDTH / 2) - @player.x)
+    itemPos.y -= ((ARENA_HEIGHT / 2) - @player.y)
+    # bail out if there is something already there
+    return if @isOccupied itemPos
+    return if @hasItem itemPos
+    # otherwise, create the item
+    itemPos.game = @game
+    itemPos.type = ITEM_TYPES.random()
+    item = new Item itemPos
+    @items.push item
 
   spawnZombie: ->
     # create a random location on the edge of the map
@@ -76,6 +102,20 @@ class GameState
       return true if (z.x is options.x) and (z.y is options.y)
     return true if (@player.x is options.x) and (@player.y is options.y)
     return false
+
+  hasItem: (options) ->
+    for i in @items
+      return true if (i.x is options.x) and (i.y is options.y)
+    return false
+
+  consumeItem: (options) ->
+    for i in @items
+      if (i.x is options.x) and (i.y is options.y)
+        item = i
+    @items = @items.filter (value, index, array) ->
+      return false if (value.x is options.x) and (value.y is options.y)
+      return true
+    return item
 
 exports.GameState = GameState
 

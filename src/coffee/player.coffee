@@ -18,7 +18,14 @@
 gui = require './gui'
 ROT = require('./rot').ROT
 
-{MAX_STAMINA,
+{AMMO_PISTOL_BONUS_PICKUP,
+AMMO_SHOTGUN_BONUS_PICKUP,
+ITEM_TYPE_BAT,
+ITEM_TYPE_PISTOL,
+ITEM_TYPE_SHOTGUN,
+ITEM_TYPE_PISTOL_AMMO,
+ITEM_TYPE_SHOTGUN_AMMO,
+MAX_STAMINA,
 STAMINA_BONUS_HURT,
 STAMINA_BONUS_REST,
 STAMINA_COST_MOVE} = require './constant'
@@ -34,6 +41,13 @@ class Player
     @bg = '#000'
     @x = 0
     @y = 0
+    @weapons =
+      bat: 0
+      pistol: 0
+      shotgun: 0
+    @ammo =
+      bullets: 0
+      shells: 0
 
   getSpeed: -> @speed
 
@@ -89,8 +103,23 @@ class Player
     # determine if the destination is legal
     if moving
       if not @game.state.isOccupied next
+        # move the player to the location
         @game.state.player.x = next.x
         @game.state.player.y = next.y
+        # check for items
+        if @game.state.hasItem next
+          item = @game.state.consumeItem next
+          switch item.type
+            when ITEM_TYPE_BAT
+              @weapons.bat = 100
+            when ITEM_TYPE_PISTOL
+              @weapons.pistol = 100
+            when ITEM_TYPE_SHOTGUN
+              @weapons.shotgun = 100
+            when ITEM_TYPE_PISTOL_AMMO
+              @ammo.bullets += AMMO_PISTOL_BONUS_PICKUP
+            when ITEM_TYPE_SHOTGUN_AMMO
+              @ammo.shells += AMMO_SHOTGUN_BONUS_PICKUP
 
     # and now we render
     gui.render @game.display, @game.state

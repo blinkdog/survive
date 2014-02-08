@@ -78,9 +78,43 @@ render = (display, state) ->
   display.drawText ARENA_WIDTH+4, DISP_HEIGHT-5, 'A+D'
   display.drawText ARENA_WIDTH+4, DISP_HEIGHT-4, 'ZXC'
 
+  # draw weapons (if available)
+  fillBox display, ARENA_WIDTH+9, DISP_HEIGHT-7, ARENA_WIDTH+26, DISP_HEIGHT-3, ' ', '#fff', '#000'
+  if state.player.weapons.bat > 0
+    weaponColor = '%c{}'
+  else
+    weaponColor = '%c{#222}'
+  display.drawText ARENA_WIDTH+10, DISP_HEIGHT-6, weaponColor + 'U = Baseball Bat'
+  if state.player.weapons.pistol > 0
+    weaponColor = '%c{}'
+  else
+    weaponColor = '%c{#222}'
+  display.drawText ARENA_WIDTH+10, DISP_HEIGHT-5, weaponColor + 'J = Pistol'
+  if state.player.weapons.shotgun > 0
+    weaponColor = '%c{}'
+  else
+    weaponColor = '%c{#222}'
+  display.drawText ARENA_WIDTH+10, DISP_HEIGHT-4, weaponColor + 'M = Shotgun'
+
+  # draw ammo (if available)
+  fillBox display, ARENA_WIDTH+28, DISP_HEIGHT-7, ARENA_WIDTH+33, DISP_HEIGHT-3, ' ', '#fff', '#000'
+  display.drawText ARENA_WIDTH+29, DISP_HEIGHT-6, 'Ammo'
+  if state.player.ammo.bullets > 0
+    ammoColor = '%c{}'
+  else
+    ammoColor = '%c{#222}'
+  display.drawText ARENA_WIDTH+29, DISP_HEIGHT-5, ammoColor + (''+state.player.ammo.bullets).lpad '0', 4
+  if state.player.ammo.shells > 0
+    ammoColor = '%c{}'
+  else
+    ammoColor = '%c{#222}'
+  display.drawText ARENA_WIDTH+29, DISP_HEIGHT-4, ammoColor + (''+state.player.ammo.shells).lpad '0', 4
+
   # determine where things are relative to the player
   offsetX = (ARENA_WIDTH/2) - state.player.x
   offsetY = (ARENA_HEIGHT/2) - state.player.y
+  # draw the items
+  drawMobile display, i, offsetX, offsetY for i in state.items
   # draw the zombies
   drawMobile display, z, offsetX, offsetY for z in state.zombies
   # draw the player

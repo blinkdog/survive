@@ -23,13 +23,12 @@ GameState = require('./gameState').GameState
 Player = require('./player').Player
 Zombie = require('./undead').Zombie
 
-DISP_WIDTH = require('./constant').DISP_WIDTH = 100
-DISP_HEIGHT = require('./constant').DISP_HEIGHT = 40
-
-ARENA_WIDTH = require('./constant').ARENA_WIDTH
-ARENA_HEIGHT = require('./constant').ARENA_HEIGHT
-
-NUM_STARTING_ZOMBIES = require('./constant').NUM_STARTING_ZOMBIES
+{ARENA_WIDTH,
+ARENA_HEIGHT,
+DISP_WIDTH,
+DISP_HEIGHT,
+NUM_STARTING_ITEMS,
+NUM_STARTING_ZOMBIES} = require './constant'
 
 displayOptions =
   width: DISP_WIDTH       # horizontal size, in characters
@@ -71,6 +70,8 @@ class Game
     #@display._canvas.style.top = (Math.round ((h-@display._canvas.height)/2) + "px")
     
   run: ->
+    # generate some items
+    @state.spawnItem() for i in [1..NUM_STARTING_ITEMS]
     # generate some zombies
     @state.spawnZombie() for i in [1..NUM_STARTING_ZOMBIES]
       
