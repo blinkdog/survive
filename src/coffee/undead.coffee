@@ -18,6 +18,14 @@
 gui = require './gui'
 ROT = require('./rot').ROT
 
+{HEALTH_COST_BITE,
+MAX_STAMINA,
+MIN_HEALTH,
+MIN_ZOMBIE_SPEED,
+STAMINA_BONUS_HURT,
+ZOMBIE_SPEED_MEAN,
+ZOMBIE_SPEED_STDDEV} = require './constant'
+
 class Zombie
   constructor: (options) ->
     @game = options.game
@@ -25,8 +33,8 @@ class Zombie
     @x = options.x
     @y = options.y
     # determine speed
-    @speed = Math.round ROT.RNG.getNormal 50, 15
-    @speed = Math.max @speed, 10    # speed at least 10
+    @speed = Math.round ROT.RNG.getNormal ZOMBIE_SPEED_MEAN, ZOMBIE_SPEED_STDDEV
+    @speed = Math.max @speed, MIN_ZOMBIE_SPEED
     # determine glyph
     @glyph = 'Z'
     # determine colors
@@ -49,11 +57,12 @@ class Zombie
   act: ->
     # if we're in melee range
     if @game.state.isMeleeRange this, @game.state.player
-      # attack!
-      @game.state.player.health -= 10;
-      if @game.state.player.health <= 0
-        @game.state.over = true
-        @game.engine.lock()
+      # Attack! -- if the zombie rolls under its speed
+      if ROT.RNG.getPercentage() < @speed
+        @game.state.player.health -= HEALTH_COST_BITE
+        @game.state.player.health = Math.max(@game.state.player.health, MIN_HEALTH)
+        @game.state.player.stamina += STAMINA_BONUS_HURT
+        @game.state.player.stamina = Math.min(@game.state.player.stamina, MAX_STAMINA)
     # otherwise, close on the player
     else
       # determine how to close on the player
@@ -78,10 +87,14 @@ class Zombie
             next.y = @y-1
           else if not @game.state.isOccupied {x:next.x, y:@y+1}
             next.y = @y+1
-            
+      # try to move to our first and/or second choice
       if not @game.state.isOccupied next
         @x = next.x
         @y = next.y
+    # check if the player is dead
+    if @game.state.player.health <= MIN_HEALTH
+      @game.state.over = true
+      @game.engine.lock()
     # and now we render
     gui.render @game.display, @game.state
 

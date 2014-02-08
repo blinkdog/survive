@@ -71,6 +71,13 @@ render = (display, state) ->
   totalWidth = Math.round (((DISP_WIDTH-4)-(ARENA_WIDTH+4))*(state.player.stamina/100))
   if totalWidth > 0
     fillBox display, ARENA_WIDTH+4, 13, ARENA_WIDTH+4+totalWidth, 13, ' ', '#fff', '#ff0'
+
+  # draw the movement directions
+  fillBox display, ARENA_WIDTH+3, DISP_HEIGHT-7, ARENA_WIDTH+7, DISP_HEIGHT-3, ' ', '#fff', '#000'
+  display.drawText ARENA_WIDTH+4, DISP_HEIGHT-6, 'QWE'
+  display.drawText ARENA_WIDTH+4, DISP_HEIGHT-5, 'A+D'
+  display.drawText ARENA_WIDTH+4, DISP_HEIGHT-4, 'ZXC'
+
   # determine where things are relative to the player
   offsetX = (ARENA_WIDTH/2) - state.player.x
   offsetY = (ARENA_HEIGHT/2) - state.player.y

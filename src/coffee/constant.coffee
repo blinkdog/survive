@@ -23,7 +23,23 @@ exports.BULLET = '⁍'                       # \u204D - Black Rightwards Bullet
 exports.DISP_WIDTH = 100
 exports.DISP_HEIGHT = 40
 
+exports.HEALTH_COST_BITE = 10
+
+exports.MAX_HEALTH = 100
+exports.MAX_STAMINA = 100
+
+exports.MIN_HEALTH = 0
+exports.MIN_STAMINA = 0
+exports.MIN_ZOMBIE_SPEED = 0
+
 exports.NUM_STARTING_ZOMBIES = 20
+
+exports.STAMINA_BONUS_HURT = 5
+exports.STAMINA_BONUS_REST = 5
+exports.STAMINA_COST_MOVE = 4
+
+exports.ZOMBIE_SPEED_MEAN = 50
+exports.ZOMBIE_SPEED_STDDEV = 15
 
 #----------------------------------------------------------------------------
 # end of constant.coffee

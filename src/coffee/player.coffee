@@ -18,6 +18,11 @@
 gui = require './gui'
 ROT = require('./rot').ROT
 
+{MAX_STAMINA,
+STAMINA_BONUS_HURT,
+STAMINA_BONUS_REST,
+STAMINA_COST_MOVE} = require './constant'
+
 class Player
   constructor: (options) ->
     @game = options.game
@@ -74,12 +79,12 @@ class Player
 
     # if we try to move, we lose stamina
     if moving
-      if @game.state.player.stamina >= 5
-        @game.state.player.stamina -= 5
+      if @game.state.player.stamina >= STAMINA_COST_MOVE
+        @game.state.player.stamina -= STAMINA_COST_MOVE
       else
         moving=false
     else
-      @game.state.player.stamina = Math.min(@game.state.player.stamina+5, 100)
+      @game.state.player.stamina = Math.min(@game.state.player.stamina+STAMINA_BONUS_REST, MAX_STAMINA)
       
     # determine if the destination is legal
     if moving
