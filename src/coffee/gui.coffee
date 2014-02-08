@@ -30,7 +30,11 @@ drawBox = (display, x1, y1, x2, y2, ch, fg, bg) ->
     display.draw x2, y, ch, fg, bg
 
 drawMobile = (display, m, offsetX, offsetY) ->
-  display.draw m.x+offsetX, m.y+offsetY, m.glyph, m.fg, m.bg
+  dx = m.x+offsetX
+  dy = m.y+offsetY
+  if (dx >= 0) and (dx <= ARENA_WIDTH-1)
+    if (dy >= 0) and (dy <= ARENA_HEIGHT-1)
+      display.draw dx, dy, m.glyph, m.fg, m.bg
 
 fillBox = (display, x1, y1, x2, y2, ch, fg, bg) ->
   for y in [y1..y2]
@@ -52,14 +56,21 @@ render = (display, state) ->
   # draw the game title
   fillBox display, ARENA_WIDTH+3, 2, DISP_WIDTH-3, 4, ' ', '#fff', '#000'
   if state.over
-    display.drawText ARENA_WIDTH+4, 3, 'You did not survive...'
+    display.drawText ARENA_WIDTH+4, 3, 'EATEN BY ZOMBIES! (' + state.turn + ' turns)'
   else
-    display.drawText ARENA_WIDTH+4, 3, 'Survive!'
+    display.drawText ARENA_WIDTH+4, 3, 'Survive! Turn ' + state.turn
   # draw the health bar
   fillBox display, ARENA_WIDTH+3, 6, DISP_WIDTH-3, 9, ' ', '#fff', '#000'
-  display.drawText ARENA_WIDTH+4, 7, 'Health'
+  display.drawText ARENA_WIDTH+4, 7, 'Health ' + state.player.health
   totalWidth = Math.round (((DISP_WIDTH-4)-(ARENA_WIDTH+4))*(state.player.health/100))
-  fillBox display, ARENA_WIDTH+4, 8, ARENA_WIDTH+4+totalWidth, 8, ' ', '#fff', '#f00'
+  if totalWidth > 0
+    fillBox display, ARENA_WIDTH+4, 8, ARENA_WIDTH+4+totalWidth, 8, ' ', '#fff', '#f00'
+  # draw the stamina bar
+  fillBox display, ARENA_WIDTH+3, 11, DISP_WIDTH-3, 14, ' ', '#fff', '#000'
+  display.drawText ARENA_WIDTH+4, 12, 'Stamina ' + state.player.stamina
+  totalWidth = Math.round (((DISP_WIDTH-4)-(ARENA_WIDTH+4))*(state.player.stamina/100))
+  if totalWidth > 0
+    fillBox display, ARENA_WIDTH+4, 13, ARENA_WIDTH+4+totalWidth, 13, ' ', '#fff', '#ff0'
   # determine where things are relative to the player
   offsetX = (ARENA_WIDTH/2) - state.player.x
   offsetY = (ARENA_HEIGHT/2) - state.player.y

@@ -52,6 +52,7 @@ class GameState
     @game = options.game
     @over = false
     @player = new Player options
+    @turn = 0
     @zombies = []
 
   spawnZombie: ->

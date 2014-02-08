@@ -15,12 +15,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #----------------------------------------------------------------------------
 
+gui = require './gui'
 ROT = require('./rot').ROT
 
 class Player
   constructor: (options) ->
     @game = options.game
     @health = 100
+    @stamina = 100
     @speed = 100
     @glyph = '@'
     @fg = '#fff'
@@ -31,13 +33,66 @@ class Player
   getSpeed: -> @speed
 
   act: ->
+    @game.state.turn += 1
     @game.engine.lock()
-    setTimeout @unlock, 500
+    window.addEventListener 'keydown', this
 
-  unlock: ->
-    @game.engine.unlock()
+  handleEvent: (e) ->
+    moving = false
+    next = {x:@game.state.player.x, y:@game.state.player.y}
+
+    keyCode = e.keyCode
+    switch e.keyCode
+      when ROT.VK_Q
+        moving=true
+        next.x -= 1
+        next.y -= 1
+      when ROT.VK_W
+        moving=true
+        next.y -= 1
+      when ROT.VK_E
+        moving=true
+        next.x += 1
+        next.y -= 1
+      when ROT.VK_A
+        moving=true
+        next.x -= 1
+      when ROT.VK_D
+        moving=true
+        next.x += 1
+      when ROT.VK_Z
+        moving=true
+        next.x -= 1
+        next.y += 1
+      when ROT.VK_X
+        moving=true
+        next.y += 1
+      when ROT.VK_C
+        moving=true
+        next.x += 1
+        next.y += 1
+
+    # if we try to move, we lose stamina
+    if moving
+      if @game.state.player.stamina >= 5
+        @game.state.player.stamina -= 5
+      else
+        moving=false
+    else
+      @game.state.player.stamina = Math.min(@game.state.player.stamina+5, 100)
+      
+    # determine if the destination is legal
+    if moving
+      if not @game.state.isOccupied next
+        @game.state.player.x = next.x
+        @game.state.player.y = next.y
+
     # and now we render
     gui.render @game.display, @game.state
+    
+    # stop listening for keys and resume the game
+    window.removeEventListener 'keydown', this
+    @game.engine.unlock()
 
 exports.Player = Player
 
