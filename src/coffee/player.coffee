@@ -16,7 +16,7 @@
 #----------------------------------------------------------------------------
 
 gui = require './gui'
-ROT = require('./rot').ROT
+{ROT} = require './rot'
 
 {AMMO_PISTOL_BONUS_PICKUP,
 AMMO_SHOTGUN_BONUS_PICKUP,
@@ -28,7 +28,22 @@ ITEM_TYPE_SHOTGUN_AMMO,
 MAX_STAMINA,
 STAMINA_BONUS_HURT,
 STAMINA_BONUS_REST,
-STAMINA_COST_MOVE} = require './constant'
+STAMINA_COST_MOVE,
+STATE_INPUT_COMMAND,
+STATE_INPUT_RESUME,
+STATE_INPUT_TARGET_BAT,
+STATE_INPUT_TARGET_PISTOL,
+STATE_INPUT_TARGET_SHOTGUN} = require './constant'
+
+offset = {}
+offset[ROT.VK_Q] = {x:-1, y:-1}
+offset[ROT.VK_W] = {x: 0, y:-1}
+offset[ROT.VK_R] = {x: 1, y:-1}
+offset[ROT.VK_A] = {x:-1, y: 0}
+offset[ROT.VK_D] = {x: 1, y: 0}
+offset[ROT.VK_Z] = {x:-1, y: 1}
+offset[ROT.VK_X] = {x: 0, y: 1}
+offset[ROT.VK_C] = {x: 1, y: 1}
 
 class Player
   constructor: (options) ->
@@ -48,19 +63,38 @@ class Player
     @ammo =
       bullets: 0
       shells: 0
+    @inputState = STATE_INPUT_COMMAND
 
   getSpeed: -> @speed
 
   act: ->
     @game.state.turn += 1
     @game.engine.lock()
+    @inputState = STATE_INPUT_COMMAND
     window.addEventListener 'keydown', this
+    # and now we render
+    gui.render @game.display, @game.state
 
   handleEvent: (e) ->
+    switch @inputState
+      when STATE_INPUT_COMMAND
+        @handleCommandKey e
+      when STATE_INPUT_TARGET_BAT
+        @handleBatKey e
+      when STATE_INPUT_TARGET_PISTOL
+        @handlePistolKey e
+      when STATE_INPUT_TARGET_SHOTGUN
+        @handleShotgunKey e
+      else
+        # stop listening for keys and resume the game
+        window.removeEventListener 'keydown', this
+        @game.engine.unlock()
+        throw 'Unknown @inputState: ' + @inputState
+  
+  handleCommandKey: (e) ->
     moving = false
     next = {x:@game.state.player.x, y:@game.state.player.y}
-
-    keyCode = e.keyCode
+    # determine which key was pressed
     switch e.keyCode
       when ROT.VK_Q
         moving=true
@@ -90,7 +124,12 @@ class Player
         moving=true
         next.x += 1
         next.y += 1
-
+      when ROT.VK_U
+        @inputState = STATE_INPUT_TARGET_BAT
+      when ROT.VK_J
+        @inputState = STATE_INPUT_TARGET_PISTOL
+      when ROT.VK_M
+        @inputState = STATE_INPUT_TARGET_SHOTGUN
     # if we try to move, we lose stamina
     if moving
       if @game.state.player.stamina >= STAMINA_COST_MOVE
@@ -99,8 +138,7 @@ class Player
         moving=false
     else
       @game.state.player.stamina = Math.min(@game.state.player.stamina+STAMINA_BONUS_REST, MAX_STAMINA)
-      
-    # determine if the destination is legal
+    # determine if the final destination is legal
     if moving
       if not @game.state.isOccupied next
         # move the player to the location
@@ -120,11 +158,41 @@ class Player
               @ammo.bullets += AMMO_PISTOL_BONUS_PICKUP
             when ITEM_TYPE_SHOTGUN_AMMO
               @ammo.shells += AMMO_SHOTGUN_BONUS_PICKUP
-
     # and now we render
     gui.render @game.display, @game.state
+    # if there is no more input to handle
+    if @inputState is STATE_INPUT_COMMAND
+      @inputState = STATE_INPUT_RESUME
+      window.removeEventListener 'keydown', this
+      @game.engine.unlock()
+
+  handleBatKey: (e) ->
+    # if the player has a bat
+    if @weapons.bat > 0
+      if offset[e.keyCode]?
+        target =
+          x: @x + offset[e.keyCode].x
+          y: @y + offset[e.keyCode].y
+        # if there is a zombie there
+        if @game.state.isOccupied target
+          @game.state.killZombie target
+          @weapons.bat--
+          # if we roll over the bat's score
+          if ROT.RNG.getPercentage() > @weapons.bat
+            # the bat broke on the zombie's skull!
+            @weapons.bat = 0
+    # regardless of how it all came out, back to the game
+    @inputState = STATE_INPUT_RESUME
+    window.removeEventListener 'keydown', this
+    @game.engine.unlock()
     
-    # stop listening for keys and resume the game
+  handlePistolKey: (e) ->
+    @inputState = STATE_INPUT_RESUME
+    window.removeEventListener 'keydown', this
+    @game.engine.unlock()
+
+  handleShotgunKey: (e) ->
+    @inputState = STATE_INPUT_RESUME
     window.removeEventListener 'keydown', this
     @game.engine.unlock()
 

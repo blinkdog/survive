@@ -72,6 +72,10 @@ render = (display, state) ->
   if totalWidth > 0
     fillBox display, ARENA_WIDTH+4, 13, ARENA_WIDTH+4+totalWidth, 13, ' ', '#fff', '#ff0'
 
+  # draw the input status bar
+  fillBox display, ARENA_WIDTH+3, 16, DISP_WIDTH-3, 18, ' ', '#fff', '#000'
+  display.drawText ARENA_WIDTH+4, 17, state.player.inputState
+
   # draw the movement directions
   fillBox display, ARENA_WIDTH+3, DISP_HEIGHT-7, ARENA_WIDTH+7, DISP_HEIGHT-3, ' ', '#fff', '#000'
   display.drawText ARENA_WIDTH+4, DISP_HEIGHT-6, 'QWE'

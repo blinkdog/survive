@@ -55,6 +55,12 @@ exports.STAMINA_BONUS_HURT = 5
 exports.STAMINA_BONUS_REST = 5
 exports.STAMINA_COST_MOVE = 4
 
+exports.STATE_INPUT_COMMAND = 'What am I going to do?'
+exports.STATE_INPUT_RESUME = "They are everywhere..."
+exports.STATE_INPUT_TARGET_BAT = 'Bat: Which direction?'
+exports.STATE_INPUT_TARGET_PISTOL = 'Pistol: Shoot which one?'
+exports.STATE_INPUT_TARGET_SHOTGUN = 'Shotgun: Which direction?'
+
 exports.ZOMBIE_SPEED_MEAN = 50
 exports.ZOMBIE_SPEED_STDDEV = 15
 

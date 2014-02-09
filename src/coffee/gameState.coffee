@@ -117,6 +117,14 @@ class GameState
       return true
     return item
 
+  killZombie: (options) ->
+    for z in @zombies
+      if (z.x is options.x) and (z.y is options.y)
+        z.killed = true
+    @zombies = @zombies.filter (value, index, array) ->
+      return false if (value.x is options.x) and (value.y is options.y)
+      return true
+
 exports.GameState = GameState
 
 #----------------------------------------------------------------------------

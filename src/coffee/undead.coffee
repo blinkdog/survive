@@ -28,6 +28,7 @@ ZOMBIE_SPEED_STDDEV} = require './constant'
 
 class Zombie
   constructor: (options) ->
+    @killed = false
     @game = options.game
     # determine position
     @x = options.x
@@ -55,6 +56,10 @@ class Zombie
   getSpeed: -> @speed
 
   act: ->
+    # if we've been killed
+    if @killed
+      @game.scheduler.remove this
+      return
     # if we're in melee range
     if @game.state.isMeleeRange this, @game.state.player
       # Attack! -- if the zombie rolls under its speed
