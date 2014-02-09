@@ -25,7 +25,9 @@ ITEM_TYPE_PISTOL,
 ITEM_TYPE_SHOTGUN,
 ITEM_TYPE_PISTOL_AMMO,
 ITEM_TYPE_SHOTGUN_AMMO,
+MAX_HEALTH,
 MAX_STAMINA,
+PLAYER_SPEED,
 STAMINA_BONUS_HURT,
 STAMINA_BONUS_REST,
 STAMINA_COST_MOVE,
@@ -48,9 +50,9 @@ offset[ROT.VK_C] = {x: 1, y: 1}
 class Player
   constructor: (options) ->
     @game = options.game
-    @health = 100
-    @stamina = 100
-    @speed = 100
+    @health = MAX_HEALTH
+    @stamina = MAX_STAMINA
+    @speed = PLAYER_SPEED
     @glyph = '@'
     @fg = '#fff'
     @bg = '#000'

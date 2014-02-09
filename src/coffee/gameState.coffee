@@ -19,6 +19,7 @@ ROT = require('./rot').ROT
 
 {Item} = require './item'
 {Player} = require './player'
+{Spawn} = require './spawn'
 {Zombie} = require './undead'
 
 {ARENA_HEIGHT,
@@ -64,6 +65,7 @@ class GameState
     @items = []
     @over = false
     @player = new Player options
+    @spawn = new Spawn options
     @turn = 0
     @zombies = []
 

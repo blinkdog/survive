@@ -15,11 +15,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #----------------------------------------------------------------------------
 
-DISP_WIDTH = require('./constant').DISP_WIDTH = 100
-DISP_HEIGHT = require('./constant').DISP_HEIGHT = 40
-
-ARENA_WIDTH = require('./constant').ARENA_WIDTH
-ARENA_HEIGHT = require('./constant').ARENA_HEIGHT
+{ARENA_WIDTH,
+ARENA_HEIGHT,
+DISP_WIDTH,
+DISP_HEIGHT,
+MAX_HEALTH,
+MAX_STAMINA} = require './constant'
 
 drawBox = (display, x1, y1, x2, y2, ch, fg, bg) ->
   for x in [x1..x2]
@@ -62,13 +63,13 @@ render = (display, state) ->
   # draw the health bar
   fillBox display, ARENA_WIDTH+3, 6, DISP_WIDTH-3, 9, ' ', '#fff', '#000'
   display.drawText ARENA_WIDTH+4, 7, 'Health ' + state.player.health
-  totalWidth = Math.round (((DISP_WIDTH-4)-(ARENA_WIDTH+4))*(state.player.health/100))
+  totalWidth = Math.round (((DISP_WIDTH-4)-(ARENA_WIDTH+4))*(state.player.health/MAX_HEALTH))
   if totalWidth > 0
     fillBox display, ARENA_WIDTH+4, 8, ARENA_WIDTH+4+totalWidth, 8, ' ', '#fff', '#f00'
   # draw the stamina bar
   fillBox display, ARENA_WIDTH+3, 11, DISP_WIDTH-3, 14, ' ', '#fff', '#000'
   display.drawText ARENA_WIDTH+4, 12, 'Stamina ' + state.player.stamina
-  totalWidth = Math.round (((DISP_WIDTH-4)-(ARENA_WIDTH+4))*(state.player.stamina/100))
+  totalWidth = Math.round (((DISP_WIDTH-4)-(ARENA_WIDTH+4))*(state.player.stamina/MAX_STAMINA))
   if totalWidth > 0
     fillBox display, ARENA_WIDTH+4, 13, ARENA_WIDTH+4+totalWidth, 13, ' ', '#fff', '#ff0'
 

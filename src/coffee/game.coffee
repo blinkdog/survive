@@ -83,6 +83,8 @@ class Game
     # add the player and the zombies
     @scheduler.add @state.player, true
     @scheduler.add z, true for z in @state.zombies
+    # add the spawn actor
+    @scheduler.add @state.spawn, true
     # start your engines!
     @engine.start()
     

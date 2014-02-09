@@ -28,6 +28,8 @@ exports.DISP_HEIGHT = 40
 
 exports.HEALTH_COST_BITE = 10
 
+exports.ITEM_SPAWN_CHANCE_PERCENT = 5
+
 exports.ITEM_TYPE_BAT = 'bat'
 exports.ITEM_TYPE_PISTOL = 'pistol'
 exports.ITEM_TYPE_SHOTGUN = 'shotgun'
@@ -51,6 +53,8 @@ exports.MIN_ZOMBIE_SPEED = 0
 exports.NUM_STARTING_ITEMS = 5
 exports.NUM_STARTING_ZOMBIES = 20
 
+exports.PLAYER_SPEED = 100
+
 exports.STAMINA_BONUS_HURT = 5
 exports.STAMINA_BONUS_REST = 5
 exports.STAMINA_COST_MOVE = 4
@@ -60,6 +64,8 @@ exports.STATE_INPUT_RESUME = "They are everywhere..."
 exports.STATE_INPUT_TARGET_BAT = 'Bat: Which direction?'
 exports.STATE_INPUT_TARGET_PISTOL = 'Pistol: Shoot which one?'
 exports.STATE_INPUT_TARGET_SHOTGUN = 'Shotgun: Which direction?'
+
+exports.ZOMBIE_SPAWN_CHANCE_PERCENT = 10
 
 exports.ZOMBIE_SPEED_MEAN = 50
 exports.ZOMBIE_SPEED_STDDEV = 15
