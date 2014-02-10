@@ -16,12 +16,47 @@
 #----------------------------------------------------------------------------
 
 gui = require './gui'
-ROT = require('./rot').ROT
+{ROT} = require './rot'
+{Item} = require './item'
+{Zombie} = require './undead'
 
-{ITEM_SPAWN_CHANCE_PERCENT,
+{ARENA_WIDTH,
+ARENA_HEIGHT,
+ITEM_SPAWN_CHANCE_PERCENT,
 ITEM_TYPES,
 PLAYER_SPEED,
 ZOMBIE_SPAWN_CHANCE_PERCENT} = require './constant'
+
+getSpawnLocation = (game) ->
+  # start with the player's starting location
+  spawnLoc =
+    x: @game.state.player.x
+    y: @game.state.player.y
+  # decide on which border the spawn will occur
+  if ROT.RNG.getUniform() < 0.5
+    if ROT.RNG.getUniform() < 0.5
+      # top
+      spawnLoc.x -= (ARENA_WIDTH/2)
+      spawnLoc.y -= (ARENA_HEIGHT/2)
+      spawnLoc.x += Math.floor ROT.RNG.getUniform() * ARENA_WIDTH
+    else
+      # bottom
+      spawnLoc.x -= (ARENA_WIDTH/2)
+      spawnLoc.y += (ARENA_HEIGHT/2)
+      spawnLoc.x += Math.floor ROT.RNG.getUniform() * ARENA_WIDTH
+  else
+    if ROT.RNG.getUniform() < 0.5
+      # left
+      spawnLoc.x -= (ARENA_WIDTH/2)
+      spawnLoc.y -= (ARENA_HEIGHT/2)
+      spawnLoc.y += Math.floor ROT.RNG.getUniform() * ARENA_HEIGHT
+    else
+      # right
+      spawnLoc.x += (ARENA_WIDTH/2)
+      spawnLoc.y -= (ARENA_HEIGHT/2)
+      spawnLoc.y += Math.floor ROT.RNG.getUniform() * ARENA_HEIGHT
+  # return the spawn location
+  return spawnLoc
 
 class Spawn
   constructor: (options) ->
@@ -46,10 +81,18 @@ class Spawn
     gui.render @game.display, @game.state
     
   spawnItem: ->
-    alert 'New Item: ' + ITEM_TYPES.random()
+    options = getSpawnLocation()
+    options.game = @game
+    options.type = ITEM_TYPES.random()
+    item = new Item options
+    @game.state.items.push item
   
   spawnZombie: ->
-    alert 'New Zombie: Speed ' + ROT.RNG.getNormal 50, 15
+    options = getSpawnLocation()
+    options.game = @game
+    zombie = new Zombie options
+    @game.state.zombies.push zombie
+    @game.scheduler.add zombie, true
 
 exports.Spawn = Spawn
 
