@@ -63,6 +63,7 @@ class GameState
   constructor: (options) ->
     @game = options.game
     @items = []
+    @messages = []
     @over = false
     @player = new Player options
     @spawn = new Spawn options

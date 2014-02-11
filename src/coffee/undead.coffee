@@ -68,6 +68,10 @@ class Zombie
         @game.state.player.health = Math.max(@game.state.player.health, MIN_HEALTH)
         @game.state.player.stamina += STAMINA_BONUS_HURT
         @game.state.player.stamina = Math.min(@game.state.player.stamina, MAX_STAMINA)
+        @game.state.messages.push "Ouch! The zombie bit me!"
+      else
+        @game.state.messages.push "The zombie's teeth narrowly miss!"
+        
     # otherwise, close on the player
     else
       # determine how to close on the player
@@ -98,6 +102,7 @@ class Zombie
         @y = next.y
     # check if the player is dead
     if @game.state.player.health <= MIN_HEALTH
+      @game.state.messages.push "WWWWWAAARARRRRRGGGGGHHHHHH!!!!"
       @game.state.over = true
       @game.engine.lock()
     # and now we render

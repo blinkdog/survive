@@ -74,6 +74,8 @@ class Game
     @state.spawnItem() for i in [1..NUM_STARTING_ITEMS]
     # generate some zombies
     @state.spawnZombie() for i in [1..NUM_STARTING_ZOMBIES]
+    # add a message
+    @state.messages.push 'Zombies?! I need a weapon!'
       
     # render this stuff
     gui.render @display, @state

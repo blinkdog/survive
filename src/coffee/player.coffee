@@ -137,6 +137,7 @@ class Player
       if @game.state.player.stamina >= STAMINA_COST_MOVE
         @game.state.player.stamina -= STAMINA_COST_MOVE
       else
+        @game.state.messages.push "I can't run anymore..."
         moving=false
     else
       @game.state.player.stamina = Math.min(@game.state.player.stamina+STAMINA_BONUS_REST, MAX_STAMINA)
@@ -152,14 +153,19 @@ class Player
           switch item.type
             when ITEM_TYPE_BAT
               @weapons.bat = 100
+              @game.state.messages.push "I got a Baseball Bat!"
             when ITEM_TYPE_PISTOL
               @weapons.pistol = 100
+              @game.state.messages.push "I got a Pistol!"
             when ITEM_TYPE_SHOTGUN
               @weapons.shotgun = 100
+              @game.state.messages.push "I got a Shotgun!"
             when ITEM_TYPE_PISTOL_AMMO
               @ammo.bullets += AMMO_PISTOL_BONUS_PICKUP
+              @game.state.messages.push "I got pistol rounds!"
             when ITEM_TYPE_SHOTGUN_AMMO
               @ammo.shells += AMMO_SHOTGUN_BONUS_PICKUP
+              @game.state.messages.push "I got shotgun shells!"
     # and now we render
     gui.render @game.display, @game.state
     # if there is no more input to handle
@@ -179,21 +185,37 @@ class Player
         if @game.state.isOccupied target
           @game.state.killZombie target
           @weapons.bat--
+          @game.state.messages.push "I crushed a zombie's skull!"
           # if we roll over the bat's score
           if ROT.RNG.getPercentage() > @weapons.bat
             # the bat broke on the zombie's skull!
             @weapons.bat = 0
+            @game.state.messages.push "Crap! My baseball bat broke!"
+        else
+          @game.state.messages.push "Swing and a miss..."
+    else
+      @game.state.messages.push "I have no baseball bat!"
     # regardless of how it all came out, back to the game
     @inputState = STATE_INPUT_RESUME
     window.removeEventListener 'keydown', this
     @game.engine.unlock()
     
   handlePistolKey: (e) ->
+    # if the player has a pistol
+    if @weapons.pistol > 0
+    else
+      @game.state.messages.push "I have no pistol!"
+    # regardless of how it all came out, back to the game
     @inputState = STATE_INPUT_RESUME
     window.removeEventListener 'keydown', this
     @game.engine.unlock()
 
   handleShotgunKey: (e) ->
+    # if the player has a pistol
+    if @weapons.shotgun > 0
+    else
+      @game.state.messages.push "I have no shotgun!"
+    # regardless of how it all came out, back to the game
     @inputState = STATE_INPUT_RESUME
     window.removeEventListener 'keydown', this
     @game.engine.unlock()
