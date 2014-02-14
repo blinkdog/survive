@@ -16,6 +16,7 @@
 #----------------------------------------------------------------------------
 
 gui = require './gui'
+shotgun = require './shotgun'
 {ROT} = require './rot'
 
 {AMMO_PISTOL_BONUS_PICKUP,
@@ -40,7 +41,7 @@ STATE_INPUT_TARGET_SHOTGUN} = require './constant'
 offset = {}
 offset[ROT.VK_Q] = {x:-1, y:-1}
 offset[ROT.VK_W] = {x: 0, y:-1}
-offset[ROT.VK_R] = {x: 1, y:-1}
+offset[ROT.VK_E] = {x: 1, y:-1}
 offset[ROT.VK_A] = {x:-1, y: 0}
 offset[ROT.VK_D] = {x: 1, y: 0}
 offset[ROT.VK_Z] = {x:-1, y: 1}
@@ -94,6 +95,7 @@ class Player
         throw 'Unknown @inputState: ' + @inputState
   
   handleCommandKey: (e) ->
+    @game.state.spread = null
     moving = false
     next = {x:@game.state.player.x, y:@game.state.player.y}
     # determine which key was pressed
@@ -211,8 +213,29 @@ class Player
     @game.engine.unlock()
 
   handleShotgunKey: (e) ->
-    # if the player has a pistol
+    # if the player has a shotgun
     if @weapons.shotgun > 0
+      if @ammo.shells > 0
+        if offset[e.keyCode]?
+          # figure out where the shot will land
+          direction = offset[e.keyCode]
+          spread = shotgun.getShotgunSpread @x, @y, direction
+          # show the shot on the display
+          @game.state.spread = spread
+          # kill any zombies in the spread
+          for target in spread
+            if @game.state.isOccupied target
+              @game.state.killZombie target
+              @game.state.messages.push "Zombie paste!"
+          # fire the shell
+          @ammo.shells--
+          # if this was our last shell
+          if @ammo.shells is 0
+            @game.state.messages.push "Oh no! I'm out of shells!"
+        else
+          @game.state.messages.push "I can't get a clear shot!"
+      else
+        @game.state.messages.push "I have no shells!"
     else
       @game.state.messages.push "I have no shotgun!"
     # regardless of how it all came out, back to the game

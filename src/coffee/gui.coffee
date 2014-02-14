@@ -37,6 +37,14 @@ drawMobile = (display, m, offsetX, offsetY) ->
     if (dy >= 0) and (dy <= ARENA_HEIGHT-1)
       display.draw dx, dy, m.glyph, m.fg, m.bg
 
+drawSpread = (display, spread, offsetX, offsetY) ->
+  for target in spread
+    dx = target.x+offsetX
+    dy = target.y+offsetY
+    if (dx >= 0) and (dx <= ARENA_WIDTH-1)
+      if (dy >= 0) and (dy <= ARENA_HEIGHT-1)
+        display.draw dx, dy, ':', '#f00', '#000'
+
 fillBox = (display, x1, y1, x2, y2, ch, fg, bg) ->
   for y in [y1..y2]
     for x in [x1..x2]
@@ -131,6 +139,9 @@ render = (display, state) ->
   drawMobile display, z, offsetX, offsetY for z in state.zombies
   # draw the player
   drawMobile display, state.player, offsetX, offsetY
+  # draw a shotgun spread
+  if state.spread?
+    drawSpread display, state.spread, offsetX, offsetY
 
 exports.render = render
 
