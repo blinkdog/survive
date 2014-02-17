@@ -95,6 +95,7 @@ class Player
         throw 'Unknown @inputState: ' + @inputState
   
   handleCommandKey: (e) ->
+    @game.state.sights = null
     @game.state.spread = null
     moving = false
     next = {x:@game.state.player.x, y:@game.state.player.y}
@@ -131,6 +132,7 @@ class Player
       when ROT.VK_U
         @inputState = STATE_INPUT_TARGET_BAT
       when ROT.VK_J
+        @game.state.sights = {x:@game.state.player.x, y:@game.state.player.y}
         @inputState = STATE_INPUT_TARGET_PISTOL
       when ROT.VK_M
         @inputState = STATE_INPUT_TARGET_SHOTGUN
@@ -203,15 +205,56 @@ class Player
     @game.engine.unlock()
     
   handlePistolKey: (e) ->
+    nextState = STATE_INPUT_TARGET_PISTOL
     # if the player has a pistol
     if @weapons.pistol > 0
+      if @ammo.bullets > 0
+        if (offset[e.keyCode]?) or (e.keyCode is ROT.VK_SPACE)
+          if offset[e.keyCode]?
+            # update the location of the sights
+            @game.state.sights =
+              x: @game.state.sights.x + offset[e.keyCode].x
+              y: @game.state.sights.y + offset[e.keyCode].y
+            # and render the gui
+            gui.render @game.display, @game.state
+          else
+            @game.state.sights.fired = true
+            # kill the target in our sights
+            if @game.state.isOccupied @game.state.sights
+              if (@game.state.sights.x is @game.state.player.x) and (@game.state.sights.y is @game.state.player.y)
+                @game.state.messages.push "FSM forgive me..."
+                @game.state.player.health = 0
+                @game.state.suicide = true
+                @game.engine.lock()
+                # and render the gui
+                gui.render @game.display, @game.state
+              else
+                @game.state.killZombie @game.state.sights
+                @game.state.messages.push "Right between zombie eyes!"
+            else
+              @game.state.messages.push "I'll try a warning shot..."
+            # fire the bullet
+            @ammo.bullets--
+            # if this was our last bullet
+            if @ammo.bullets is 0
+              @game.state.messages.push "Oh no! I'm out of bullets!"
+            # return to the game
+            nextState = STATE_INPUT_RESUME
+        else
+          @game.state.messages.push "I can't get a clear shot!"
+          nextState = STATE_INPUT_RESUME
+      else
+        @game.state.messages.push "I have no bullets!"
+        nextState = STATE_INPUT_RESUME
     else
       @game.state.messages.push "I have no pistol!"
-    # regardless of how it all came out, back to the game
-    @inputState = STATE_INPUT_RESUME
-    window.removeEventListener 'keydown', this
-    @game.engine.unlock()
-
+      nextState = STATE_INPUT_RESUME
+    # if we're going back to the game
+    if nextState is STATE_INPUT_RESUME
+      @inputState = STATE_INPUT_RESUME
+      window.removeEventListener 'keydown', this
+      @game.engine.unlock()
+      
   handleShotgunKey: (e) ->
     # if the player has a shotgun
     if @weapons.shotgun > 0

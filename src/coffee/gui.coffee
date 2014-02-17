@@ -20,7 +20,8 @@ ARENA_HEIGHT,
 DISP_WIDTH,
 DISP_HEIGHT,
 MAX_HEALTH,
-MAX_STAMINA} = require './constant'
+MAX_STAMINA,
+TARGET} = require './constant'
 
 drawBox = (display, x1, y1, x2, y2, ch, fg, bg) ->
   for x in [x1..x2]
@@ -36,6 +37,16 @@ drawMobile = (display, m, offsetX, offsetY) ->
   if (dx >= 0) and (dx <= ARENA_WIDTH-1)
     if (dy >= 0) and (dy <= ARENA_HEIGHT-1)
       display.draw dx, dy, m.glyph, m.fg, m.bg
+
+drawSights = (display, sights, offsetX, offsetY) ->
+  dx = sights.x+offsetX
+  dy = sights.y+offsetY
+  if (dx >= 0) and (dx <= ARENA_WIDTH-1)
+    if (dy >= 0) and (dy <= ARENA_HEIGHT-1)
+      if sights.fired?
+        display.draw dx, dy, '%', '#f00', '#000'
+      else
+        display.draw dx, dy, TARGET, '#f00', '#800'
 
 drawSpread = (display, spread, offsetX, offsetY) ->
   for target in spread
@@ -54,7 +65,7 @@ render = (display, state) ->
   # clear the display
   fillBox display, 0, 0, DISP_WIDTH-1, DISP_HEIGHT-1, ' ', '#fff', '#000'
   # draw the arena
-  if state.over
+  if state.over or state.suicide
     fillBox display, 0, 0, ARENA_WIDTH-1, ARENA_HEIGHT-1, '.', '#500', '#000'
   else
     fillBox display, 0, 0, ARENA_WIDTH-1, ARENA_HEIGHT-1, '.', '#070', '#000'
@@ -67,7 +78,10 @@ render = (display, state) ->
   if state.over
     display.drawText ARENA_WIDTH+4, 3, 'EATEN BY ZOMBIES! (' + state.turn + ' turns)'
   else
-    display.drawText ARENA_WIDTH+4, 3, 'Survive! Turn ' + state.turn
+    if state.suicide
+      display.drawText ARENA_WIDTH+4, 3, 'ATE A BULLET (' + state.turn + ' turns)'
+    else
+      display.drawText ARENA_WIDTH+4, 3, 'Survive! Turn ' + state.turn
   # draw the health bar
   fillBox display, ARENA_WIDTH+3, 6, DISP_WIDTH-3, 9, ' ', '#fff', '#000'
   display.drawText ARENA_WIDTH+4, 7, 'Health ' + state.player.health
@@ -142,6 +156,9 @@ render = (display, state) ->
   # draw a shotgun spread
   if state.spread?
     drawSpread display, state.spread, offsetX, offsetY
+  # draw a pistol sights
+  if state.sights?
+    drawSights display, state.sights, offsetX, offsetY
 
 exports.render = render
 

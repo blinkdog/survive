@@ -62,8 +62,10 @@ exports.STAMINA_COST_MOVE = 4
 exports.STATE_INPUT_COMMAND = 'What am I going to do?'
 exports.STATE_INPUT_RESUME = "They are everywhere..."
 exports.STATE_INPUT_TARGET_BAT = 'Bat: Which direction?'
-exports.STATE_INPUT_TARGET_PISTOL = 'Pistol: Shoot which one?'
+exports.STATE_INPUT_TARGET_PISTOL = 'Pistol: SPACE to fire!'
 exports.STATE_INPUT_TARGET_SHOTGUN = 'Shotgun: Which direction?'
+
+exports.TARGET = '◎'                                      # \u25CE - BULLSEYE
 
 exports.ZOMBIE_SPAWN_CHANCE_PERCENT = 10
 
